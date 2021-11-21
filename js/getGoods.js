@@ -1,7 +1,7 @@
 "use strict";
-const search = function () {
-  const input = document.querySelector(".search-block > input"),
-    inputBtn = document.querySelector(".search-block > button");
+const getGoods = () => {
+  const links = document.querySelectorAll(".navigation-link");
+
   const renderGoods = (goods) => {
     const goodsContainer = document.querySelector(".long-goods-list");
     goodsContainer.innerHTML = "";
@@ -23,17 +23,17 @@ const search = function () {
 					</div>
           `;
       goodsContainer.append(goodBlock);
+      // console.log(good);
     });
   };
 
-  const getData = (value) => {
+  const getData = (value, category) => {
     fetch("/db/db.json")
       .then((response) => response.json())
       .then((data) => {
-        const array = data.filter((good) =>
-          good.name.toLowerCase().includes(value.toLowerCase())
-        );
-        console.log("value: ", value);
+        const array = category
+          ? data.filter((item) => item[category] === value)
+          : data;
         localStorage.setItem("goods", JSON.stringify(array));
 
         if (window.location.pathname !== "/goods.html") {
@@ -44,9 +44,22 @@ const search = function () {
       });
   };
 
-  inputBtn.addEventListener("click", () => {
-    getData(input.value);
-    input.value = "";
+  links.forEach((item) => {
+    item.addEventListener("click", (event) => {
+      event.preventDefault();
+      const linkValue = item.textContent;
+      const category = item.dataset.field;
+
+      getData(linkValue, category);
+    });
   });
+
+  if (
+    localStorage.getItem("goods") &&
+    window.location.pathname === "/goods.html"
+  ) {
+    renderGoods(JSON.parse(localStorage.getItem("goods")));
+  }
 };
-search();
+
+getGoods();
