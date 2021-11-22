@@ -15,5 +15,6 @@
   "latedef": true,
   "noempty": true,
   "funcscope": true,
+  "laxbreak": true,
   "node": true
 }
